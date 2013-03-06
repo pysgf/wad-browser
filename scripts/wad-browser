@@ -7,6 +7,32 @@ class Window(QtGui.QWidget):
     def __init__(self):
         super(Window, self).__init__()
 
+        self.sourceView = QtGui.QTreeView()
+        self.sourceView.setRootIsDecorated(False)
+        self.sourceView.setAlternatingRowColors(True)
+
+        mainLayout = QtGui.QVBoxLayout()
+        mainLayout.addWidget(self.sourceView)
+        self.setLayout(mainLayout)
+
+        self.setWindowTitle("Doomworld wad browser")
+        self.resize(500,600)
+
+        self.sourceModel = QtGui.QStandardItemModel(0, 3, self)
+        self.sourceModel.setHeaderData(0, QtCore.Qt.Horizontal, "Name")
+        self.sourceModel.setHeaderData(1, QtCore.Qt.Horizontal, "Author")
+        self.sourceModel.setHeaderData(2, QtCore.Qt.Horizontal, "Date")
+        self.sourceView.setModel(self.sourceModel)
+
+        self.addRow("Some Wad", "A Guy", "2013")
+
+    def addRow(self, name, author, date):
+        model = self.sourceModel
+        model.insertRow(0)
+        model.setData(model.index(0, 0), name)
+        model.setData(model.index(0, 1), author)
+        model.setData(model.index(0, 2), date)
+
 
 if __name__=='__main__':
     import sys
