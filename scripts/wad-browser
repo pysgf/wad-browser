@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 
-from PySide import QtCore, QtGui
+from PySide import QtCore, QtGui, QtUiTools
+import requests
+
+
+def list_latest(limit=10):
+    url = 'http://doomworld.com/idgames/api/api.php?action=latestfiles&limit={}&out=json'.format(limit)
+    r = requests.get(url)
+    return r.json()
 
 
 class Window(QtGui.QWidget):
@@ -16,7 +23,7 @@ class Window(QtGui.QWidget):
         self.setLayout(mainLayout)
 
         self.setWindowTitle("Doomworld wad browser")
-        self.resize(500,600)
+        #self.resize(500,600)
 
         self.sourceModel = QtGui.QStandardItemModel(0, 3, self)
         self.sourceModel.setHeaderData(0, QtCore.Qt.Horizontal, "Name")
@@ -24,14 +31,16 @@ class Window(QtGui.QWidget):
         self.sourceModel.setHeaderData(2, QtCore.Qt.Horizontal, "Date")
         self.sourceView.setModel(self.sourceModel)
 
-        self.addRow("Some Wad", "A Guy", "2013")
+        data = list_latest()
+        for row in data['content']['file']:
+            self.addRow(row['title'], row['author'], row['rating'])
 
-    def addRow(self, name, author, date):
+    def addRow(self, name, author, rating):
         model = self.sourceModel
         model.insertRow(0)
         model.setData(model.index(0, 0), name)
         model.setData(model.index(0, 1), author)
-        model.setData(model.index(0, 2), date)
+        model.setData(model.index(0, 2), rating)
 
 
 if __name__=='__main__':
