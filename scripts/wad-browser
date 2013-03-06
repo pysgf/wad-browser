@@ -17,6 +17,7 @@ class Window(QtGui.QWidget):
         self.sourceView = QtGui.QTreeView()
         self.sourceView.setRootIsDecorated(False)
         self.sourceView.setAlternatingRowColors(True)
+        self.sourceView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
 
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addWidget(self.sourceView)
