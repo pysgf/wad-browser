@@ -11,6 +11,9 @@ def list_latest(limit=10):
 
 
 class Window(QtGui.QWidget):
+
+    JSON_DATA_ROLE = QtCore.Qt.UserRole + 1
+
     def __init__(self):
         super(Window, self).__init__()
 
@@ -43,19 +46,18 @@ class Window(QtGui.QWidget):
         for row in data:
             self.addRow(row['title'], row['author'], row['rating'], row)
 
-        self.detailView.setPlainText('test text here')
-
     def rowSelected(self, selected, deselected):
-        print 'selected', selected
-        print dir(selected)
+        model = self.sourceModel
+        data = model.data(model.index(selected.row(), 0), self.JSON_DATA_ROLE)
+        self.detailView.setHtml(data['description'])
 
-    def addRow(self, title, author, rating, extra=None):
-        print extra
+    def addRow(self, title, author, rating, data=None):
         model = self.sourceModel
         model.insertRow(0)
         model.setData(model.index(0, 0), title)
         model.setData(model.index(0, 1), author)
         model.setData(model.index(0, 2), rating)
+        model.setData(model.index(0, 0), data, self.JSON_DATA_ROLE)
 
 
 if __name__=='__main__':
