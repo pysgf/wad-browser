@@ -19,27 +19,41 @@ class Window(QtGui.QWidget):
         self.sourceView.setAlternatingRowColors(True)
         self.sourceView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
 
-        mainLayout = QtGui.QVBoxLayout()
+        self.detailView = QtGui.QTextBrowser()
+
+        mainLayout = QtGui.QHBoxLayout()
         mainLayout.addWidget(self.sourceView)
+        mainLayout.addWidget(self.detailView)
         self.setLayout(mainLayout)
 
         self.setWindowTitle("Doomworld wad browser")
-        #self.resize(500,600)
 
         self.sourceModel = QtGui.QStandardItemModel(0, 3, self)
-        self.sourceModel.setHeaderData(0, QtCore.Qt.Horizontal, "Name")
+        self.sourceModel.setHeaderData(0, QtCore.Qt.Horizontal, "Title")
         self.sourceModel.setHeaderData(1, QtCore.Qt.Horizontal, "Author")
-        self.sourceModel.setHeaderData(2, QtCore.Qt.Horizontal, "Date")
+        self.sourceModel.setHeaderData(2, QtCore.Qt.Horizontal, "Rating")
         self.sourceView.setModel(self.sourceModel)
 
-        data = list_latest()
-        for row in data['content']['file']:
-            self.addRow(row['title'], row['author'], row['rating'])
+        self.selectionModel = QtGui.QItemSelectionModel(self.sourceModel)
+        self.selectionModel.currentChanged.connect(self.rowSelected)
+        self.sourceView.setSelectionModel(self.selectionModel)
 
-    def addRow(self, name, author, rating):
+        data = list_latest()['content']['file']
+
+        for row in data:
+            self.addRow(row['title'], row['author'], row['rating'], row)
+
+        self.detailView.setPlainText('test text here')
+
+    def rowSelected(self, selected, deselected):
+        print 'selected', selected
+        print dir(selected)
+
+    def addRow(self, title, author, rating, extra=None):
+        print extra
         model = self.sourceModel
         model.insertRow(0)
-        model.setData(model.index(0, 0), name)
+        model.setData(model.index(0, 0), title)
         model.setData(model.index(0, 1), author)
         model.setData(model.index(0, 2), rating)
 
